@@ -1,0 +1,101 @@
+/* style.css — Eagle Advisory Partners theme */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  background-color: #f8f9fa;
+  color: #00274d;
+}
+
+header {
+  text-align: center;
+  padding: 24px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #00274d;
+}
+
+#map {
+  height: 650px;
+  width: 100%;
+  border-top: 1px solid #dee2e6;
+}
+
+.legend {
+  background: white;
+  padding: 10px 14px;
+  font-size: 20px;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+  line-height: 1.6;
+  font-size: 17px;
+}
+.legend .dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  border-radius: 3px;
+}
+
+.dot-tier1-lower40 { background: #004080; }
+.dot-tier1 { background: #00274d; }
+.dot-tier2 { background: #6c757d; }
+.dot-tier3 { background: #f4c542; }
+.dot-tier4 { background: #d9534f; }
+
+.leaflet-popup-content {
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #00274d;
+}
+
+/* County fill colors by tier */
+path.tier1-lower40 {
+  fill: #3b7f4d; /* deep green */
+}
+path.tier1 {
+  fill: #6fbf73; /* light green */
+}
+path.tier2 {
+  fill: #4a6fa5; /* muted blue */
+}
+path.tier3 {
+  fill: #5a8fc2; /* medium blue */
+}
+path.tier4 {
+  fill: #7fb3e6; /* light blue */
+}
+path.tier-unknown {
+  fill: #cccccc;
+}
+
+.county-popup {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 400px; /* default Leaflet is 200px */
+  padding: 15px;
+  color: #00274d;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+}
+
+/* Smooth fade for county polygons */
+path.county-fade {
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+path.county-visible {
+  opacity: 1;
+  transition: opacity 0.4s ease-in;
+}

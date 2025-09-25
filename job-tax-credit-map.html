@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Georgia Job Tax Credit Tier Map – 2025</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+ <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Georgia Job Tax Credit Tier Map – 2025</h1>
+  </header>
+<div style="text-align:center; margin:20px;">
+  <label for="yearSelect" style="font-weight:600; font-size:16px; margin-right:8px;">Select Year:</label>
+  <select id="yearSelect" style="font-size:16px; padding:6px 10px;">
+    <option value="2025" selected>2025</option>
+    <option value="2024">2024</option>
+    <option value="2023">2023</option>
+    <option value="2022">2022</option>
+  </select>
+</div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([32.5, -83.5], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const tierColors = {
+      "Tier 1 Lower 40": "#004080",
+      "Tier 1": "#00274d",
+      "Tier 2": "#6c757d",
+      "Tier 3": "#f4c542",
+      "Tier 4": "#d9534f"
+    };
+
+let tierData = {};
+let currentYear = "2025";
+let geoLayer;
+
+function loadTierData() {
+  fetch('tiers.json')
+    .then(response => response.json())
+    .then(data => {
+      tierData = data;
+      renderMap(currentYear);
+    });
+}
+
+function renderMap(year) {
+  currentYear = year;
+  const tierMap = tierData[year];
+
+  // Fade out existing counties
+  if (geoLayer) {
+    geoLayer.eachLayer(layer => {
+      const path = layer._path;
+      if (path) {
+        path.classList.remove("county-visible");
+        path.classList.add("county-fade");
+      }
+    });
+  }
+
+  setTimeout(() => {
+    if (geoLayer) {
+      map.removeLayer(geoLayer);
+    }
+
+    fetch('CountyBoundaries.geojson')
+      .then(response => response.json())
+      .then(data => {
+        geoLayer = L.geoJSON(data, {
+          style: feature => {
+            const rawName = feature.properties.NAME || feature.properties.Name || feature.properties.COUNTY;
+            const county = rawName.replace(" County", "").trim().toLowerCase();
+            const label = tierData[year][county];
+
+            const classMap = {
+              "Tier 1 Lower 40": "tier1-lower40",
+              "Tier 1": "tier1",
+              "Tier 2": "tier2",
+              "Tier 3": "tier3",
+              "Tier 4": "tier4"
+            };
+
+            return {
+              className: `${classMap[label] || "tier-unknown"} county-fade`,
+              weight: 1.5,
+              color: "#333333",
+              opacity: 1,
+              fillOpacity: 0.9
+            };
+          },
+          onEachFeature: (feature, layer) => {
+            const rawName = feature.properties.NAME || feature.properties.Name || feature.properties.COUNTY;
+            const county = rawName.replace(" County", "").trim();
+            const label = tierMap[county.toLowerCase()] || "Tier Unknown";
+
+            const creditMap = {
+              "Tier 1 Lower 40": "$4,000 per job",
+              "Tier 1": "$3,500 per job",
+              "Tier 2": "$2,500 per job",
+              "Tier 3": "$1,250 per job",
+              "Tier 4": "$750 per job"
+            };
+            const creditInfo = creditMap[label] || "N/A";
+
+            const popupContent = `
+              <div class="county-popup">
+                <strong>${county} County</strong><br>
+                <em>${label}</em><br>
+                <span style="color:#004080;">${creditInfo}</span>
+              </div>
+            `;
+
+            layer.on('mouseover', function (e) {
+              this.setStyle({
+                weight: 2.5,
+                color: "#007bff",
+                fillOpacity: 0.9
+              });
+              this.bringToFront();
+              this.bindPopup(popupContent, {
+  maxWidth: 300,
+  offset: L.point(120, -40), // right and slightly above
+  className: 'custom-popup'
+}).openPopup(e.latlng);
+            });
+
+            layer.on('mouseout', function () {
+              geoLayer.resetStyle(this);
+              this.closePopup();
+            });
+
+            // Fade in new county
+            setTimeout(() => {
+              const path = layer._path;
+              if (path) {
+                path.classList.remove("county-fade");
+                path.classList.add("county-visible");
+              }
+            }, 50);
+          }
+        }).addTo(map);
+      });
+  }, 300);
+}
+
+       const legend = L.control({ position: "bottomright" });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create("div", "legend");
+      div.innerHTML = `
+        <strong>Tier Legend</strong><br>
+        <span class="dot" style="background:#3b7f4d;"></span> Tier 1 Lower 40<br>
+        <span class="dot" style="background:#6fbf73;"></span> Tier 1<br>
+        <span class="dot" style="background:#4a6fa5;"></span> Tier 2<br>
+        <span class="dot" style="background:#5a8fc2;"></span> Tier 3<br>
+        <span class="dot" style="background:#7fb3e6;"></span> Tier 4
+      `;
+      return div;
+    };
+    legend.addTo(map);
+
+    document.getElementById('yearSelect').addEventListener('change', function () {
+      renderMap(this.value);
+    });
+
+    loadTierData();
+  </script>
+</body>
+</html>
