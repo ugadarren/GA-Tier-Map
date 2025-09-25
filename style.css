@@ -99,3 +99,7 @@ path.county-visible {
   opacity: 1;
   transition: opacity 0.4s ease-in;
 }
+
+.custom-popup .leaflet-popup-tip {
+  display: none;
+}
