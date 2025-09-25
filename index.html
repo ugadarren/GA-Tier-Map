@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Georgia Job Tax Credit Tier Map</title>
+  <title>Georgia JTC & ITC Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Georgia Job Tax Credit Tier Map</h1>
+    <h1>Georgia JTC & ITC Map</h1>
   </header>
 <div style="text-align:center; margin:20px;">
   <label for="yearSelect" style="font-weight:600; font-size:16px; margin-right:8px;">Select Year:</label>
@@ -21,8 +21,20 @@
   </select>
 </div>
   <div id="map"></div>
-
+<div id="countyInfoPanel" class="info-panel">
+  <h2 id="countyName">County Name</h2>
+<hr>
+  <h2>
+Job Tax Credit</h2>
+  <p><strong>County Tier:</strong> <span id="countyTier">—</span></p>
+  <p><strong>Max Job Tax Credit:</strong> <span id="countyCredit">—</span></p>
+  <p>Per Year for 5 Years<p>
+  <p><strong>Minimum New Jobs Created:</strong> <span id="countyJobs">—</span></p></div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div id="investmentInfoPanel" class="info-panel">
+  <h2>Investment Tax Credit</h2>
+  <p><strong>Available Credit:</strong> <span id="investmentCredit">—</span></p>
+</div>
   <script>
     const map = L.map('map').setView([32.5, -83.5], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -107,29 +119,45 @@ function renderMap(year) {
               "Tier 3": "$1,250 per job",
               "Tier 4": "$750 per job"
             };
+	   
+ const jobThresholdMap = {
+  "Tier 1 Lower 40": "2 jobs",
+  "Tier 1": "2 jobs",
+  "Tier 2": "10 jobs",
+  "Tier 3": "15 jobs",
+  "Tier 4": "25 jobs"
+};
+
+const investmentCreditMap = {
+  "Tier 1 Lower 40": "5% of investment cost",
+  "Tier 1": "5% of investment cost",
+  "Tier 2": "3% of investment cost",
+  "Tier 3": "1% of investment cost",
+  "Tier 4": "1% of investment cost"
+};
+
             const creditInfo = creditMap[label] || "N/A";
 
-            const popupContent = `
-              <div class="county-popup">
-                <strong>${county} County</strong><br>
-                <em>${label}</em><br>
-                <span style="color:#004080;">${creditInfo}</span>
-              </div>
-            `;
+           layer.on('mouseover', function (e) {
+  this.setStyle({
+    weight: 2.5,
+    color: "#007bff",
+    fillOpacity: 0.9
+  });
+  this.bringToFront();
 
-            layer.on('mouseover', function (e) {
-              this.setStyle({
-                weight: 2.5,
-                color: "#007bff",
-                fillOpacity: 0.9
-              });
-              this.bringToFront();
-              this.bindPopup(popupContent, {
-  maxWidth: 300,
-  offset: L.point(120, -40), // right and slightly above
-  className: 'custom-popup'
-}).openPopup(e.latlng);
-            });
+  document.getElementById("countyName").textContent = `${county} County`;
+  document.getElementById("countyTier").textContent = label;
+  document.getElementById("countyCredit").textContent = creditInfo;
+  document.getElementById("countyJobs").textContent = jobThresholdMap[label] || "—";
+  document.getElementById("investmentCredit").textContent = investmentCreditMap[label] || "—";
+
+});
+
+layer.on('mouseout', function () {
+  geoLayer.resetStyle(this);
+});
+
 
             layer.on('mouseout', function () {
               geoLayer.resetStyle(this);
