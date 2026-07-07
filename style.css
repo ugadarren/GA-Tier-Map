@@ -2,9 +2,9 @@
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
   background-color: #f8f9fa;
-  color: #00274d;
+  color: #023a51;
 }
 
 header {
@@ -18,7 +18,7 @@ h1 {
   margin: 0;
   font-size: 28px;
   font-weight: 600;
-  color: #00274d;
+  color: #023a51;
 }
 
 #map {
@@ -39,8 +39,8 @@ h1 {
   padding: 14px;
   font-size: 17px;
   line-height: 1.6;
-  font-family: 'Segoe UI', sans-serif;
-  color: #00274d;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #023a51;
   z-index: 1000;
 }
 
@@ -53,7 +53,7 @@ h1 {
 }
 
 .dot-tier1-lower40 { background: #004080; }
-.dot-tier1 { background: #00274d; }
+.dot-tier1 { background: #023a51; }
 .dot-tier2 { background: #6c757d; }
 .dot-tier3 { background: #f4c542; }
 .dot-tier4 { background: #d9534f; }
@@ -62,7 +62,7 @@ h1 {
   font-size: 15px;
   line-height: 1.6;
   font-weight: 400;
-  color: #00274d;
+  color: #023a51;
 }
 
 /* County fill colors by tier */
@@ -90,7 +90,7 @@ path.tier-unknown {
   line-height: 1.6;
   max-width: 400px; /* default Leaflet is 200px */
   padding: 15px;
-  color: #00274d;
+  color: #023a51;
 }
 
 .leaflet-popup-content {
@@ -122,8 +122,8 @@ path.county-visible {
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   padding: 16px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #00274d;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #023a51;
   z-index: 1000;
 margin-top: 100px;
 }
@@ -132,7 +132,7 @@ margin-top: 100px;
   margin-top: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #00274d;
+  color: #023a51;
 }
 
 .info-panel p {
@@ -156,8 +156,8 @@ margin-top: 100px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   padding: 16px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #00274d;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #023a51;
   z-index: 1000;
 }
 
@@ -165,7 +165,7 @@ margin-top: 100px;
   margin-top: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #00274d;
+  color: #023a51;
 }
 
 #investmentInfoPanel p {
@@ -188,14 +188,14 @@ margin-top: 100px;
   font-size: 15px;
   border: 1px solid #ced4da;
   border-radius: 4px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #00274d;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #023a51;
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: #00274d;
-  box-shadow: 0 0 0 2px rgba(0, 39, 77, 0.15);
+  border-color: #023a51;
+  box-shadow: 0 0 0 2px rgba(2, 58, 81, 0.15);
 }
 
 #searchStreet { width: 240px; }
@@ -206,7 +206,7 @@ margin-top: 100px;
   padding: 9px 20px;
   font-size: 15px;
   font-weight: 600;
-  background-color: #00274d;
+  background-color: #023a51;
   color: #ffffff;
   border: none;
   border-radius: 4px;
@@ -231,7 +231,7 @@ margin-top: 100px;
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 39, 77, 0.55);
+  background: rgba(2, 58, 81, 0.55);
   z-index: 2000;
   justify-content: center;
   align-items: center;
@@ -252,8 +252,8 @@ margin-top: 100px;
   border-radius: 10px;
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.3);
   padding: 30px 28px 24px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #00274d;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #023a51;
   animation: modalIn 0.2s ease-out;
 }
 
@@ -322,7 +322,7 @@ margin-top: 100px;
 
 .desig-label {
   flex: 1 1 auto;
-  color: #00274d;
+  color: #023a51;
 }
 
 .desig-label em {
@@ -354,7 +354,7 @@ margin-top: 100px;
   font-size: 14px;
   line-height: 1.5;
   margin: 0 0 10px;
-  color: #00274d;
+  color: #023a51;
 }
 
 .elig-yes {
@@ -369,10 +369,10 @@ margin-top: 100px;
   padding: 8px 14px;
   font-size: 14px;
   font-weight: 600;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   background: #ffffff;
-  color: #00274d;
-  border: 1px solid #00274d;
+  color: #023a51;
+  border: 1px solid #023a51;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -407,10 +407,10 @@ margin-top: 100px;
   background: #f8f9fa;
   border: none;
   cursor: pointer;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #00274d;
+  color: #023a51;
   text-align: left;
 }
 
@@ -423,7 +423,7 @@ margin-top: 100px;
 
 .elig-count {
   flex: 0 0 auto;
-  background: #00274d;
+  background: #023a51;
   color: #ffffff;
   font-size: 12px;
   font-weight: 600;
@@ -450,7 +450,7 @@ margin-top: 100px;
 .elig-code {
   flex: 0 0 62px;
   font-weight: 700;
-  color: #00274d;
+  color: #023a51;
   font-variant-numeric: tabular-nums;
 }
 
@@ -497,7 +497,7 @@ margin-top: 100px;
 }
 
 .modal-close:hover {
-  color: #00274d;
+  color: #023a51;
 }
 
 .modal-year {
@@ -513,7 +513,7 @@ margin-top: 100px;
   margin: 2px 0 12px;
   font-size: 27px;
   font-weight: 700;
-  color: #00274d;
+  color: #023a51;
 }
 
 .modal-address {
@@ -544,7 +544,7 @@ margin-top: 100px;
   margin: 0 0 10px;
   font-size: 17px;
   font-weight: 600;
-  color: #00274d;
+  color: #023a51;
 }
 
 .modal-row {
@@ -594,4 +594,24 @@ margin-top: 100px;
   #investmentInfoPanel.show {
     display: block;
   }
+}
+
+/* --- Site-matched theme (Eagle Advisory Partners) --- */
+/* Serif display headings, like the main site */
+h1,
+.modal-card h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Buttons match the site's light style (light fill, brand-navy text) */
+.search-bar button,
+.elig-toggle {
+  background-color: #e0ecf0;
+  color: #023a51;
+  border: none;
+}
+
+.search-bar button:hover,
+.elig-toggle:hover {
+  background-color: #cfe1ea;
 }

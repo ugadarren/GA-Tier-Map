@@ -30,7 +30,7 @@
     window.top.location = window.self.location.href;
   } catch (e) {
     var msg = document.createElement("div");
-    msg.style.cssText = "font-family:sans-serif;padding:2rem;text-align:center;color:#00274d";
+    msg.style.cssText = "font-family:sans-serif;padding:2rem;text-align:center;color:#023a51";
     msg.textContent = "This application cannot be embedded in another site.";
     if (document.documentElement) document.documentElement.replaceChildren(msg);
   }
@@ -97,7 +97,7 @@
       const g = parseInt(c.substr(2, 2), 16);
       const b = parseInt(c.substr(4, 2), 16);
       const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-      return lum > 150 ? '#00274d' : '#ffffff';
+      return lum > 150 ? '#023a51' : '#ffffff';
     }
 
     let tierData = {};
@@ -244,7 +244,7 @@
       }));
 
       return `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img">
-        <path d="${d}" fill="${color}" fill-rule="evenodd" stroke="#00274d" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="${d}" fill="${color}" fill-rule="evenodd" stroke="#023a51" stroke-width="1.2" stroke-linejoin="round"/>
       </svg>`;
     }
 
