@@ -263,7 +263,7 @@ path.county-visible {
   position: relative;
   background: #ffffff;
   width: 100%;
-  max-width: 800px;
+  max-width: 620px;
   max-height: 92vh;
   overflow-y: auto;
   border-radius: 10px;
@@ -281,8 +281,8 @@ path.county-visible {
 }
 
 .modal-shape {
-  flex: 0 0 380px;
-  min-height: 320px;
+  flex: 0 0 190px;
+  min-height: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
