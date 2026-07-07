@@ -10,9 +10,14 @@ Deploy by serving the repository files over HTTPS.
 | `index.html` | Page markup + Content-Security-Policy meta tag |
 | `app.js` | All application logic (map, search, modal, eligibility) + frame-guard |
 | `style.css` | Styling |
+| `fonts.css` + `fonts/` | Self-hosted Inter & Playfair Display (no third-party font requests) |
 | `tiers.json` | County → JTC tier by year (2022–2026) |
 | `naics.json` | Business Enterprise NAICS industry list |
 | `CountyBoundaries.geojson` | Georgia county polygons |
+
+The map is full-bleed: it fills its container, with the search and info cards floating
+on top. When embedded, the **iframe's `height` controls how tall the map appears** —
+increase it for a bigger map.
 
 ## Required server headers (set these on your own site)
 

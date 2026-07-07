@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://services2.arcgis.com; font-src 'self' https://fonts.gstatic.com; base-uri 'none'; form-action 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com 'unsafe-inline'; img-src 'self' data: https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://services2.arcgis.com; font-src 'self'; base-uri 'none'; form-action 'none'" />
   <title>Georgia JTC & ITC Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
         crossorigin="anonymous" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="fonts.css" />
  <link rel="stylesheet" href="style.css" />
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
@@ -18,40 +16,45 @@
   <script defer src="app.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Georgia JTC & ITC Map</h1>
-  </header>
-<div style="text-align:center; margin:20px;">
-  <label for="yearSelect" style="font-weight:600; font-size:16px; margin-right:8px;">Select Year:</label>
-  <select id="yearSelect" style="font-size:16px; padding:6px 10px;">
-    <option value="2026" selected>2026</option>
-    <option value="2025">2025</option>
-    <option value="2024">2024</option>
-    <option value="2023">2023</option>
-    <option value="2022">2022</option>
-  </select>
-</div>
-<div class="search-bar">
-  <input id="searchStreet" type="text" placeholder="Street address" aria-label="Street address" />
-  <input id="searchCity" type="text" placeholder="City" aria-label="City" />
-  <input id="searchZip" type="text" placeholder="ZIP" inputmode="numeric" aria-label="ZIP code" />
-  <button id="searchBtn">Search</button>
-</div>
-<div id="searchStatus" class="search-status" role="status" aria-live="polite"></div>
   <div id="map"></div>
-<div id="countyInfoPanel" class="info-panel">
-  <h2 id="countyName">County Name</h2>
-<hr>
-  <h2>
-Job Tax Credit</h2>
-  <p><strong>County Tier:</strong> <span id="countyTier">—</span></p>
-  <p><strong>Max Job Tax Credit:</strong> <span id="countyCredit">—</span></p>
-  <p>Per Year for 5 Years<p>
-  <p><strong>Minimum New Jobs Created:</strong> <span id="countyJobs">—</span></p></div>
-<div id="investmentInfoPanel" class="info-panel">
-  <h2>Investment Tax Credit</h2>
-  <p><strong>Available Credit:</strong> <span id="investmentCredit">—</span></p>
-</div>
+
+  <div class="control-card">
+    <div class="control-row">
+      <label for="yearSelect">Tier Year</label>
+      <select id="yearSelect">
+        <option value="2026" selected>2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+      </select>
+    </div>
+    <div class="search-bar">
+      <input id="searchStreet" type="text" placeholder="Street address" aria-label="Street address" />
+      <div class="search-bar-row">
+        <input id="searchCity" type="text" placeholder="City" aria-label="City" />
+        <input id="searchZip" type="text" placeholder="ZIP" inputmode="numeric" aria-label="ZIP code" />
+      </div>
+      <button id="searchBtn">Search address</button>
+    </div>
+    <div id="searchStatus" class="search-status" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="right-stack">
+    <div id="countyInfoPanel" class="info-panel">
+      <h2 id="countyName">County Name</h2>
+      <hr>
+      <h2>Job Tax Credit</h2>
+      <p><strong>County Tier:</strong> <span id="countyTier">—</span></p>
+      <p><strong>Max Job Tax Credit:</strong> <span id="countyCredit">—</span></p>
+      <p>Per Year for 5 Years</p>
+      <p><strong>Minimum New Jobs Created:</strong> <span id="countyJobs">—</span></p>
+    </div>
+    <div id="investmentInfoPanel" class="info-panel">
+      <h2>Investment Tax Credit</h2>
+      <p><strong>Available Credit:</strong> <span id="investmentCredit">—</span></p>
+    </div>
+  </div>
 
 <div id="countyModal" class="modal-overlay" aria-hidden="true">
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalCountyName">

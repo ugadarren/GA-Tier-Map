@@ -36,7 +36,8 @@
   }
 })();
 
-    const map = L.map('map').setView([32.5, -83.5], 7);
+    const map = L.map('map', { zoomControl: false }).setView([32.5, -83.5], 7);
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);

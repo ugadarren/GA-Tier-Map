@@ -1,5 +1,9 @@
 /* style.css — Eagle Advisory Partners theme */
 
+html, body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
@@ -7,24 +11,61 @@ body {
   color: #023a51;
 }
 
-header {
-  text-align: center;
-  padding: 24px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+/* Full-bleed map fills the frame; all controls float on top of it */
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+/* Floating control card (top-left): year + address search */
+.control-card {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  width: 250px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  padding: 14px;
   color: #023a51;
 }
 
-#map {
-  height: 650px;
-  width: 100%;
-  border-top: 1px solid #dee2e6;
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.control-row label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.control-row select {
+  font-size: 14px;
+  padding: 5px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #023a51;
+  background: #ffffff;
+}
+
+/* Floating stack of hover-info cards (top-right) */
+.right-stack {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 250px;
 }
 
 .legend {
@@ -113,10 +154,6 @@ path.county-visible {
 }
 
 .info-panel {
-  position: absolute;
-  top: 100px;
-  right: 30px;
-  width: 260px;
   background: #ffffff;
   border: 1px solid #dee2e6;
   border-radius: 6px;
@@ -124,8 +161,6 @@ path.county-visible {
   padding: 16px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   color: #023a51;
-  z-index: 1000;
-margin-top: 100px;
 }
 
 .info-panel h2 {
@@ -146,21 +181,6 @@ margin-top: 100px;
   margin-bottom: 20px;
 }
 
-#investmentInfoPanel {
-  position: absolute;
-  top: calc(100px + 240px); /* matches info-panel top + estimated height */
-  right: 30px;
-  width: 260px;
-  background: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  padding: 16px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  color: #023a51;
-  z-index: 1000;
-}
-
 #investmentInfoPanel h3 {
   margin-top: 0;
   font-size: 18px;
@@ -173,23 +193,27 @@ margin-top: 100px;
   font-size: 15px;
 }
 
-/* Address search bar */
+/* Address search (stacked inside the control card) */
 .search-bar {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin: 0 20px 6px;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.search-bar-row {
+  display: flex;
+  gap: 7px;
 }
 
 .search-bar input {
-  padding: 8px 10px;
-  font-size: 15px;
+  padding: 7px 9px;
+  font-size: 14px;
   border: 1px solid #ced4da;
   border-radius: 4px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   color: #023a51;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-bar input:focus {
@@ -198,32 +222,25 @@ margin-top: 100px;
   box-shadow: 0 0 0 2px rgba(2, 58, 81, 0.15);
 }
 
-#searchStreet { width: 240px; }
-#searchCity { width: 150px; }
-#searchZip { width: 90px; }
+#searchStreet { width: 100%; }
+#searchCity { flex: 1 1 auto; }
+#searchZip { flex: 0 0 80px; }
 
 .search-bar button {
-  padding: 9px 20px;
-  font-size: 15px;
+  width: 100%;
+  padding: 8px 14px;
+  font-size: 14px;
   font-weight: 600;
-  background-color: #023a51;
-  color: #ffffff;
-  border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
-.search-bar button:hover {
-  background-color: #013a6b;
-}
-
 .search-status {
-  text-align: center;
-  min-height: 20px;
-  font-size: 14px;
+  min-height: 18px;
+  font-size: 13px;
   color: #6c757d;
-  margin-bottom: 10px;
+  margin-top: 6px;
 }
 
 /* County detail modal */
@@ -581,24 +598,24 @@ margin-top: 100px;
   margin: 4px 0 0;
 }
 
-/* Hide panels by default on mobile */
+/* On small screens keep just the map + search card (hover cards/legend crowd it) */
 @media (max-width: 768px) {
-  .legend,
-  .info-panel,
-  #investmentInfoPanel {
+  .right-stack,
+  .legend {
     display: none;
   }
 
-  .legend.show,
-  .info-panel.show,
-  #investmentInfoPanel.show {
-    display: block;
+  .control-card {
+    width: auto;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    max-width: 320px;
   }
 }
 
 /* --- Site-matched theme (Eagle Advisory Partners) --- */
 /* Serif display headings, like the main site */
-h1,
 .modal-card h2 {
   font-family: 'Playfair Display', Georgia, serif;
 }
