@@ -16,19 +16,52 @@ Deploy by serving the repository files over HTTPS.
 
 ## Required server headers (set these on your own site)
 
-The app ships a Content-Security-Policy via a `<meta>` tag, but a meta tag **cannot**
-set framing protection. To stop anyone embedding the map in an `<iframe>` on their
-site, set these HTTP response headers on your web server for all pages:
+The app is designed to be embedded **only** by trusted sites and to break out of any
+other frame. The allow-list lives at the top of `app.js` (`frameGuard`):
+
+```js
+var ALLOWED = [
+  "https://www.eagleadvisorypartners.com",
+  "https://eagleadvisorypartners.com"
+];
+```
+
+Add any domain that should be allowed to embed the map (e.g. a staging site) to this
+list. Every other origin is bounced (the map takes over the tab, or blanks if a
+sandboxed frame blocks the break-out).
+
+Because a `<meta>` CSP cannot set framing rules, this JS guard is what enforces the
+policy on GitHub Pages. If you later host the map on a server you control, also set a
+matching HTTP response header (strongest, runs before any JS):
 
 ```
-X-Frame-Options: DENY
-Content-Security-Policy: frame-ancestors 'none'
+Content-Security-Policy: frame-ancestors 'self' https://www.eagleadvisorypartners.com
 ```
 
-With these headers the browser refuses to render the page in any frame before any
-JavaScript runs — the strongest guarantee. The frame-guard in `app.js` is a
-client-side fallback that also works on static hosts (e.g. GitHub Pages) that can't
-set headers; keep both.
+## Embedding the map on the Eagle Advisory (WordPress / Avada) site
+
+1. Edit the page in Avada Builder, add a **Code Block** element where the map should go.
+2. Paste this snippet:
+
+   ```html
+   <iframe
+     src="https://ugadarren.github.io/GA-Tier-Map/"
+     title="Georgia Job Tax Credit Map"
+     style="width:100%; height:900px; border:0;"
+     loading="lazy"
+     referrerpolicy="strict-origin-when-cross-origin"></iframe>
+   ```
+
+3. Save/publish. The map loads from GitHub Pages, so future pushes to `main` update the
+   embedded map automatically.
+
+Notes:
+- Keep `referrerpolicy` at `strict-origin-when-cross-origin` (or `origin`) — the
+  Firefox fallback in the frame-guard reads the referrer to verify the embedder.
+  Do **not** use `referrerpolicy="no-referrer"`, which would break embedding in Firefox.
+- Height ~900px gives the map, search, and the detail modal room; adjust to taste.
+- The page must be served over **https** (Avada/WordPress default) — the iframe origin
+  must match the allow-list exactly, including `https://` and `www`.
 
 ### How to set the headers
 

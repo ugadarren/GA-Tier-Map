@@ -1,16 +1,37 @@
-// Anti-embedding: refuse to run inside a frame on another site (clickjacking / content theft).
-// NOTE: the authoritative protection is an HTTP header set by the web server:
-//   X-Frame-Options: DENY   and   Content-Security-Policy: frame-ancestors 'none'
-// A <meta> CSP cannot set frame-ancestors, so this script covers static hosting.
+// Anti-embedding: allow this app to be framed ONLY by trusted sites (ALLOWED below);
+// break out of every other frame (clickjacking / content-theft protection).
+// NOTE: the strongest protection is an HTTP header from the server hosting THIS app:
+//   Content-Security-Policy: frame-ancestors 'self' https://www.eagleadvisorypartners.com
+// GitHub Pages can't set headers, so this script enforces the same policy client-side.
 (function frameGuard() {
-  if (window.top === window.self) return;      // not framed — normal load
+  if (window.top === window.self) return; // not framed — normal load
+
+  // Origins permitted to embed this map in an iframe.
+  var ALLOWED = [
+    "https://www.eagleadvisorypartners.com",
+    "https://eagleadvisorypartners.com"
+  ];
+
+  // Trust the frame only if EVERY ancestor origin is allow-listed.
+  var trusted = false;
+  var origins = window.location.ancestorOrigins; // Chrome / Safari / Edge
+  if (origins && origins.length) {
+    trusted = true;
+    for (var i = 0; i < origins.length; i++) {
+      if (ALLOWED.indexOf(origins[i]) === -1) { trusted = false; break; }
+    }
+  } else if (document.referrer) {                // Firefox fallback (immediate parent)
+    try { trusted = ALLOWED.indexOf(new URL(document.referrer).origin) !== -1; } catch (e) {}
+  }
+  if (trusted) return;
+
+  // Untrusted embedder: break out, or blank the page if a sandbox blocks the break-out.
   try {
-    window.top.location = window.self.location.href;   // break out of the frame
+    window.top.location = window.self.location.href;
   } catch (e) {
-    // A sandboxed frame can block the break-out; blank the page so it cannot be embedded.
-    var msg = document.createElement('div');
-    msg.style.cssText = 'font-family:sans-serif;padding:2rem;text-align:center;color:#00274d';
-    msg.textContent = 'This application cannot be embedded in another site.';
+    var msg = document.createElement("div");
+    msg.style.cssText = "font-family:sans-serif;padding:2rem;text-align:center;color:#00274d";
+    msg.textContent = "This application cannot be embedded in another site.";
     if (document.documentElement) document.documentElement.replaceChildren(msg);
   }
 })();
