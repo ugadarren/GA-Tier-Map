@@ -36,12 +36,21 @@
   }
 })();
 
-    // Fit the initial view to Georgia's extent so the whole state fills the frame
-    // (height-constrained in a landscape window). zoomSnap: 0 allows a fractional
-    // zoom so it fits closely instead of snapping to a whole zoom level.
+    // Fit the initial view to Georgia's extent. We reserve pixel space for the
+    // floating card columns (left search card, right info/legend cards) so the state
+    // is centered in the clear area between them and never sits under a card.
+    // zoomSnap: 0 lets it fit with a fractional zoom instead of snapping.
     const GEORGIA_BOUNDS = [[30.34, -85.61], [35.01, -80.83]];
     const map = L.map('map', { zoomControl: false, zoomSnap: 0 });
-    map.fitBounds(GEORGIA_BOUNDS, { padding: [10, 10] });
+
+    function fitGeorgia() {
+      const wide = map.getSize().x >= 768;
+      const opts = wide
+        ? { paddingTopLeft: [300, 28], paddingBottomRight: [300, 28] }
+        : { paddingTopLeft: [16, 116], paddingBottomRight: [16, 16] }; // mobile: only top card
+      map.fitBounds(GEORGIA_BOUNDS, opts);
+    }
+    fitGeorgia();
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
