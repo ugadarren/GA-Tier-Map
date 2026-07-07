@@ -380,10 +380,12 @@ path.county-visible {
 }
 
 .elig-toggle {
-  display: inline-flex;
+  display: flex;
+  width: 100%;
+  justify-content: center;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
+  gap: 8px;
+  padding: 10px 14px;
   font-size: 14px;
   font-weight: 600;
   font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -393,6 +395,10 @@ path.county-visible {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.15s ease;
+}
+
+.elig-toggle .elig-caret {
+  font-size: 17px;
 }
 
 .elig-toggle:hover { background: #eef2f6; }
@@ -494,7 +500,7 @@ path.county-visible {
   background: #ffffff;
   border-radius: 0 10px 10px 0;
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.28);
-  padding: 20px 18px 16px;
+  padding: 20px 18px 16px 22px;  /* left = right(18) + 4px tuck, so visible spacing is even */
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);   /* tucked fully behind the modal */
@@ -503,7 +509,7 @@ path.county-visible {
 }
 
 .industries-panel.open {
-  transform: translateX(-16px);    /* peek out; 16px stays behind the modal */
+  transform: translateX(-4px);   /* flush beside the modal (4px tucked to hide the seam) */
   pointer-events: auto;
 }
 
