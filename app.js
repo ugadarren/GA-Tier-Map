@@ -432,9 +432,8 @@
       const list = document.getElementById("eligList");
 
       section.style.display = "";
-      list.hidden = true;
       list.innerHTML = "";
-      toggle.setAttribute("aria-expanded", "false");
+      closeIndustries(); // reset the slide-out panel for the newly shown county
 
       const safeCounty = escapeHtml(countyName);
       const safeBasis = escapeHtml(elig.basisLabel);
@@ -625,6 +624,7 @@
     // County detail modal open/close behavior
     const countyModal = document.getElementById('countyModal');
     function closeCountyModal() {
+      closeIndustries();
       countyModal.classList.remove('show');
       countyModal.setAttribute('aria-hidden', 'true');
     }
@@ -633,17 +633,34 @@
       if (e.target === countyModal) closeCountyModal();
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeCountyModal();
+      if (e.key !== 'Escape') return;
+      // Escape closes the industries panel first (if open), otherwise the modal.
+      if (industriesPanel.classList.contains('open')) closeIndustries();
+      else closeCountyModal();
     });
 
-    // Industry-eligibility accordion: main toggle + per-sector expand/collapse.
+    // Industry eligibility: the toggle slides out a side panel; per-sector rows expand.
     const eligToggle = document.getElementById('eligToggle');
     const eligList = document.getElementById('eligList');
+    const industriesPanel = document.getElementById('industriesPanel');
+
+    function openIndustries() {
+      industriesPanel.classList.add('open');
+      industriesPanel.setAttribute('aria-hidden', 'false');
+      eligToggle.setAttribute('aria-expanded', 'true');
+    }
+    function closeIndustries() {
+      industriesPanel.classList.remove('open');
+      industriesPanel.setAttribute('aria-hidden', 'true');
+      eligToggle.setAttribute('aria-expanded', 'false');
+    }
+
     eligToggle.addEventListener('click', function () {
-      const open = eligList.hidden;
-      eligList.hidden = !open;
-      eligToggle.setAttribute('aria-expanded', String(open));
+      if (industriesPanel.classList.contains('open')) closeIndustries();
+      else openIndustries();
     });
+    document.getElementById('industriesClose').addEventListener('click', closeIndustries);
+
     eligList.addEventListener('click', function (e) {
       const head = e.target.closest('.elig-sector-head');
       if (!head) return;
