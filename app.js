@@ -257,33 +257,53 @@
       const px = x => offX + (x - minX) * scale;
       const py = y => offY + (maxY - y) * scale; // flip vertical
 
-      const paths = {};
+      const paths = {}, bboxes = {};
       features.forEach(f => {
         let d = '', last = '';
+        let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
         forEachCountyRing(f.geometry, ring => {
           ring.forEach((pt, i) => {
             const X = Math.round(px(pt[0] * k)), Y = Math.round(py(pt[1]));
+            if (X < bx0) bx0 = X; if (X > bx1) bx1 = X;
+            if (Y < by0) by0 = Y; if (Y > by1) by1 = Y;
             const cmd = (i === 0 ? 'M' : 'L') + X + ',' + Y;
             if (cmd !== last) { d += cmd; last = cmd; } // drop sub-pixel duplicate points
           });
           d += 'Z'; last = 'Z';
         });
-        paths[countyKeyOf(f)] = d;
+        const key = countyKeyOf(f);
+        paths[key] = d;
+        bboxes[key] = { x: bx0, y: by0, w: (bx1 - bx0) || 1, h: (by1 - by0) || 1 };
       });
-      countyContext = { paths, vbW, vbH };
+      countyContext = { paths, bboxes, vbW, vbH };
     }
+
+    // Frame the target county at ~80% of the box, with greyed neighbors filling the rest.
+    const LOCATOR_BOX_ASPECT = 190 / 220; // width / height of the image box
+    const LOCATOR_TARGET_FRAC = 0.8;      // target county ≈ 80% of the box
 
     function countyContextSVG(targetKey, color) {
       if (!countyContext) return '';
-      const { paths, vbW, vbH } = countyContext;
+      const { paths, bboxes, vbW, vbH } = countyContext;
       let others = '';
       for (const key in paths) {
         if (key !== targetKey) others += `<path d="${paths[key]}"/>`;
       }
       const target = paths[targetKey]
-        ? `<path d="${paths[targetKey]}" fill="${color}" stroke="#023a51" stroke-width="1.4" stroke-linejoin="round"/>`
+        ? `<path d="${paths[targetKey]}" fill="${color}" stroke="#023a51" stroke-width="1.6" stroke-linejoin="round"/>`
         : '';
-      return `<svg viewBox="0 0 ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" preserveAspectRatio="xMidYMid meet">
+
+      let viewBox = `0 0 ${vbW} ${vbH}`;
+      const tb = bboxes[targetKey];
+      if (tb) {
+        // Frame so the target is ~80% in its binding dimension; keep the box aspect ratio.
+        const fw = Math.max(tb.w / LOCATOR_TARGET_FRAC, (tb.h / LOCATOR_TARGET_FRAC) * LOCATOR_BOX_ASPECT);
+        const fh = fw / LOCATOR_BOX_ASPECT;
+        const cx = tb.x + tb.w / 2, cy = tb.y + tb.h / 2;
+        viewBox = `${(cx - fw / 2).toFixed(1)} ${(cy - fh / 2).toFixed(1)} ${fw.toFixed(1)} ${fh.toFixed(1)}`;
+      }
+
+      return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" preserveAspectRatio="xMidYMid slice">
         <g fill="#dfe3e8" stroke="#ffffff" stroke-width="0.5" fill-rule="evenodd">${others}</g>
         ${target}
       </svg>`;
