@@ -41,7 +41,7 @@
     // is centered in the clear area between them and never sits under a card.
     // zoomSnap: 0 lets it fit with a fractional zoom instead of snapping.
     const GEORGIA_BOUNDS = [[30.34, -85.61], [35.01, -80.83]];
-    const map = L.map('map', { zoomControl: false, zoomSnap: 0 });
+    const map = L.map('map', { zoomControl: false, zoomSnap: 0, zoomDelta: 0.5 });
 
     function fitGeorgia() {
       const wide = map.getSize().x >= 768;
@@ -51,6 +51,9 @@
       map.fitBounds(GEORGIA_BOUNDS, opts);
     }
     fitGeorgia();
+    // Keep the exact initial fit (zoomSnap 0 above), then snap later zooms to 1/4 levels
+    // so scroll-wheel zooming feels smooth instead of tiny and jumpy.
+    map.options.zoomSnap = 0.25;
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
@@ -251,7 +254,8 @@
       })));
 
       const w = (maxX - minX) || 1, h = (maxY - minY) || 1;
-      const pad = 6, vbW = 300, vbH = Math.round(vbW * h / w);
+      // High-resolution projection so edges stay smooth when the locator zooms in.
+      const pad = 40, vbW = 2400, vbH = Math.round(vbW * h / w);
       const scale = Math.min((vbW - 2 * pad) / w, (vbH - 2 * pad) / h);
       const offX = (vbW - w * scale) / 2, offY = (vbH - h * scale) / 2;
       const px = x => offX + (x - minX) * scale;
@@ -259,17 +263,20 @@
 
       const paths = {}, bboxes = {};
       features.forEach(f => {
-        let d = '', last = '';
+        let d = '';
         let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
         forEachCountyRing(f.geometry, ring => {
-          ring.forEach((pt, i) => {
-            const X = Math.round(px(pt[0] * k)), Y = Math.round(py(pt[1]));
+          let started = false, lx = 0, ly = 0;
+          for (let i = 0; i < ring.length; i++) {
+            const X = Math.round(px(ring[i][0] * k)), Y = Math.round(py(ring[i][1]));
             if (X < bx0) bx0 = X; if (X > bx1) bx1 = X;
             if (Y < by0) by0 = Y; if (Y > by1) by1 = Y;
-            const cmd = (i === 0 ? 'M' : 'L') + X + ',' + Y;
-            if (cmd !== last) { d += cmd; last = cmd; } // drop sub-pixel duplicate points
-          });
-          d += 'Z'; last = 'Z';
+            if (!started) { d += 'M' + X + ',' + Y; lx = X; ly = Y; started = true; }
+            else if (Math.abs(X - lx) + Math.abs(Y - ly) >= 2) { // thin very close points
+              d += 'L' + X + ',' + Y; lx = X; ly = Y;
+            }
+          }
+          d += 'Z';
         });
         const key = countyKeyOf(f);
         paths[key] = d;
@@ -281,32 +288,49 @@
     // Frame the target county at ~80% of the box, with greyed neighbors filling the rest.
     const LOCATOR_BOX_ASPECT = 190 / 220; // width / height of the image box
     const LOCATOR_TARGET_FRAC = 0.8;      // target county ≈ 80% of the box
+    let locatorSVGEl = null, locatorHighlighted = null;
 
-    function countyContextSVG(targetKey, color) {
-      if (!countyContext) return '';
-      const { paths, bboxes, vbW, vbH } = countyContext;
-      let others = '';
-      for (const key in paths) {
-        if (key !== targetKey) others += `<path d="${paths[key]}"/>`;
-      }
-      const target = paths[targetKey]
-        ? `<path d="${paths[targetKey]}" fill="${color}" stroke="#023a51" stroke-width="1.6" stroke-linejoin="round"/>`
-        : '';
+    // Inject the greyed state once; later opens only retarget the viewBox + highlight.
+    function ensureLocatorSVG() {
+      if (locatorSVGEl || !countyContext) return;
+      const { paths } = countyContext;
+      let inner = '';
+      for (const key in paths) inner += `<path data-k="${key}" d="${paths[key]}"/>`;
+      document.getElementById('modalShape').innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" preserveAspectRatio="xMidYMid slice">' +
+        '<g fill="#dfe3e8" stroke="#ffffff" stroke-width="0.5" fill-rule="evenodd">' + inner + '</g></svg>';
+      locatorSVGEl = document.querySelector('#modalShape svg');
+    }
 
-      let viewBox = `0 0 ${vbW} ${vbH}`;
+    function showLocator(targetKey, color) {
+      if (geoData && !countyContext) buildCountyContext(geoData.features);
+      ensureLocatorSVG();
+      if (!locatorSVGEl || !countyContext) return;
+      const { bboxes, vbW, vbH } = countyContext;
       const tb = bboxes[targetKey];
       if (tb) {
         // Frame so the target is ~80% in its binding dimension; keep the box aspect ratio.
         const fw = Math.max(tb.w / LOCATOR_TARGET_FRAC, (tb.h / LOCATOR_TARGET_FRAC) * LOCATOR_BOX_ASPECT);
         const fh = fw / LOCATOR_BOX_ASPECT;
         const cx = tb.x + tb.w / 2, cy = tb.y + tb.h / 2;
-        viewBox = `${(cx - fw / 2).toFixed(1)} ${(cy - fh / 2).toFixed(1)} ${fw.toFixed(1)} ${fh.toFixed(1)}`;
+        locatorSVGEl.setAttribute('viewBox',
+          `${(cx - fw / 2).toFixed(1)} ${(cy - fh / 2).toFixed(1)} ${fw.toFixed(1)} ${fh.toFixed(1)}`);
+      } else {
+        locatorSVGEl.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
       }
-
-      return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" preserveAspectRatio="xMidYMid slice">
-        <g fill="#dfe3e8" stroke="#ffffff" stroke-width="0.5" fill-rule="evenodd">${others}</g>
-        ${target}
-      </svg>`;
+      if (locatorHighlighted) {
+        locatorHighlighted.removeAttribute('fill');
+        locatorHighlighted.removeAttribute('stroke');
+        locatorHighlighted.removeAttribute('stroke-width');
+      }
+      const tp = locatorSVGEl.querySelector('path[data-k="' + targetKey + '"]');
+      if (tp) {
+        tp.setAttribute('fill', color);
+        tp.setAttribute('stroke', '#023a51');
+        tp.setAttribute('stroke-width', '1.6');
+        tp.parentNode.appendChild(tp); // draw the highlighted county on top
+        locatorHighlighted = tp;
+      }
     }
 
     // --- Point-in-polygon (ray casting; even-odd rule handles holes) -------
@@ -511,8 +535,7 @@
       const displayName = feature ? countyDisplayName(feature)
         : key.replace(/\b\w/g, c => c.toUpperCase());
 
-      if (geoData && !countyContext) buildCountyContext(geoData.features);
-      document.getElementById("modalShape").innerHTML = countyContextSVG(key, accentColor);
+      showLocator(key, accentColor);
       document.getElementById("modalCountyName").textContent = `${displayName} County`;
       document.getElementById("modalYear").textContent = currentYear;
       document.getElementById("modalAccent").style.background = accentColor;
