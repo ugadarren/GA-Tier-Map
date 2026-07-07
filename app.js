@@ -140,6 +140,8 @@
           .then(data => {
             geoData = data;
             data.features.forEach(f => { countyFeatureByKey[countyKeyOf(f)] = f; });
+            // Precompute the state locator off the critical path so modals open instantly.
+            setTimeout(() => { if (!countyContext) buildCountyContext(data.features); }, 0);
             return data;
           });
       }
@@ -224,42 +226,66 @@
       }, 300);
     }
 
-    // --- County shape silhouette (inline SVG) ------------------------------
-    function countyShapeSVG(geom, color) {
-      const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+    // --- County locator: the whole state greyed, the target county highlighted ---
+    // Project every county once (cached); rebuild the small SVG per modal open.
+    let countyContext = null;
 
-      // Aspect correction: a degree of longitude shrinks with latitude.
+    function forEachCountyRing(geom, cb) {
+      const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+      polys.forEach(poly => poly.forEach(cb));
+    }
+
+    function buildCountyContext(features) {
       let latMin = Infinity, latMax = -Infinity;
-      polys.forEach(p => p.forEach(ring => ring.forEach(pt => {
+      features.forEach(f => forEachCountyRing(f.geometry, ring => ring.forEach(pt => {
         if (pt[1] < latMin) latMin = pt[1];
         if (pt[1] > latMax) latMax = pt[1];
       })));
-      const k = Math.cos(((latMin + latMax) / 2) * Math.PI / 180) || 1;
+      const k = Math.cos(((latMin + latMax) / 2) * Math.PI / 180) || 1; // lng aspect correction
 
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-      polys.forEach(p => p.forEach(ring => ring.forEach(pt => {
+      features.forEach(f => forEachCountyRing(f.geometry, ring => ring.forEach(pt => {
         const x = pt[0] * k, y = pt[1];
         if (x < minX) minX = x; if (x > maxX) maxX = x;
         if (y < minY) minY = y; if (y > maxY) maxY = y;
       })));
 
       const w = (maxX - minX) || 1, h = (maxY - minY) || 1;
-      const size = 200, pad = 16;
-      const scale = Math.min((size - 2 * pad) / w, (size - 2 * pad) / h);
-      const offX = (size - w * scale) / 2, offY = (size - h * scale) / 2;
+      const pad = 6, vbW = 300, vbH = Math.round(vbW * h / w);
+      const scale = Math.min((vbW - 2 * pad) / w, (vbH - 2 * pad) / h);
+      const offX = (vbW - w * scale) / 2, offY = (vbH - h * scale) / 2;
       const px = x => offX + (x - minX) * scale;
       const py = y => offY + (maxY - y) * scale; // flip vertical
 
-      let d = '';
-      polys.forEach(poly => poly.forEach(ring => {
-        ring.forEach((pt, i) => {
-          d += (i === 0 ? 'M' : 'L') + px(pt[0] * k).toFixed(1) + ',' + py(pt[1]).toFixed(1);
+      const paths = {};
+      features.forEach(f => {
+        let d = '', last = '';
+        forEachCountyRing(f.geometry, ring => {
+          ring.forEach((pt, i) => {
+            const X = Math.round(px(pt[0] * k)), Y = Math.round(py(pt[1]));
+            const cmd = (i === 0 ? 'M' : 'L') + X + ',' + Y;
+            if (cmd !== last) { d += cmd; last = cmd; } // drop sub-pixel duplicate points
+          });
+          d += 'Z'; last = 'Z';
         });
-        d += 'Z';
-      }));
+        paths[countyKeyOf(f)] = d;
+      });
+      countyContext = { paths, vbW, vbH };
+    }
 
-      return `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img">
-        <path d="${d}" fill="${color}" fill-rule="evenodd" stroke="#023a51" stroke-width="1.2" stroke-linejoin="round"/>
+    function countyContextSVG(targetKey, color) {
+      if (!countyContext) return '';
+      const { paths, vbW, vbH } = countyContext;
+      let others = '';
+      for (const key in paths) {
+        if (key !== targetKey) others += `<path d="${paths[key]}"/>`;
+      }
+      const target = paths[targetKey]
+        ? `<path d="${paths[targetKey]}" fill="${color}" stroke="#023a51" stroke-width="1.4" stroke-linejoin="round"/>`
+        : '';
+      return `<svg viewBox="0 0 ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" preserveAspectRatio="xMidYMid meet">
+        <g fill="#dfe3e8" stroke="#ffffff" stroke-width="0.5" fill-rule="evenodd">${others}</g>
+        ${target}
       </svg>`;
     }
 
@@ -465,8 +491,8 @@
       const displayName = feature ? countyDisplayName(feature)
         : key.replace(/\b\w/g, c => c.toUpperCase());
 
-      document.getElementById("modalShape").innerHTML =
-        feature ? countyShapeSVG(feature.geometry, accentColor) : "";
+      if (geoData && !countyContext) buildCountyContext(geoData.features);
+      document.getElementById("modalShape").innerHTML = countyContextSVG(key, accentColor);
       document.getElementById("modalCountyName").textContent = `${displayName} County`;
       document.getElementById("modalYear").textContent = currentYear;
       document.getElementById("modalAccent").style.background = accentColor;
@@ -644,13 +670,37 @@
     const eligList = document.getElementById('eligList');
     const industriesPanel = document.getElementById('industriesPanel');
 
+    const modalShell = document.querySelector('.modal-shell');
+
+    // Size the panel to fit beside the modal (up to 450px) and shift the modal left so
+    // the modal + panel pair stays centered and fully on-screen at any embed width.
+    function layoutIndustriesPanel() {
+      if (!modalShell) return;
+      const vw = window.innerWidth;
+      if (vw <= 820) { // small screens use the CSS right-edge sheet
+        industriesPanel.style.width = '';
+        modalShell.style.transform = '';
+        return;
+      }
+      const modalW = modalShell.offsetWidth;
+      const pw = Math.max(300, Math.min(450, vw - modalW - 40));
+      industriesPanel.style.width = pw + 'px';
+      let shift = (pw - 4) / 2;
+      const modalLeft = (vw - modalW) / 2 - shift;
+      if (modalLeft < 16) shift = (vw - modalW) / 2 - 16;
+      modalShell.style.transform = 'translateX(-' + Math.round(Math.max(0, shift)) + 'px)';
+    }
+
     function openIndustries() {
       industriesPanel.classList.add('open');
+      layoutIndustriesPanel();
       industriesPanel.setAttribute('aria-hidden', 'false');
       eligToggle.setAttribute('aria-expanded', 'true');
     }
     function closeIndustries() {
       industriesPanel.classList.remove('open');
+      if (modalShell) modalShell.style.transform = '';
+      industriesPanel.style.width = '';
       industriesPanel.setAttribute('aria-hidden', 'true');
       eligToggle.setAttribute('aria-expanded', 'false');
     }

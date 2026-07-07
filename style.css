@@ -263,7 +263,7 @@ path.county-visible {
   position: relative;
   background: #ffffff;
   width: 100%;
-  max-width: 620px;
+  max-width: 800px;
   max-height: 92vh;
   overflow-y: auto;
   border-radius: 10px;
@@ -281,7 +281,8 @@ path.county-visible {
 }
 
 .modal-shape {
-  flex: 0 0 190px;
+  flex: 0 0 380px;
+  min-height: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -289,12 +290,12 @@ path.county-visible {
   border: 1px solid #e9ecef;
   border-radius: 8px;
   padding: 12px;
+  overflow: hidden;
 }
 
 .modal-shape svg {
   width: 100%;
-  height: auto;
-  max-height: 190px;
+  height: 100%;
 }
 
 .modal-details {
@@ -382,6 +383,7 @@ path.county-visible {
 .elig-toggle {
   display: flex;
   width: 100%;
+  margin-top: 16px;
   justify-content: center;
   align-items: center;
   gap: 8px;
@@ -483,6 +485,7 @@ path.county-visible {
 .modal-shell {
   position: relative;
   display: flex;
+  transition: transform 0.32s ease;
 }
 
 .modal-card {
@@ -495,12 +498,12 @@ path.county-visible {
   bottom: 20px;          /* a touch shorter than the modal */
   left: 100%;            /* left edge meets the modal's right edge */
   z-index: 1;            /* behind the modal */
-  width: 300px;
+  width: 450px;
   box-sizing: border-box;
   background: #ffffff;
   border-radius: 0 10px 10px 0;
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.28);
-  padding: 20px 18px 16px 22px;  /* left = right(18) + 4px tuck, so visible spacing is even */
+  padding: 20px 18px 16px 33px;  /* wider left padding for breathing room */
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);   /* tucked fully behind the modal */
