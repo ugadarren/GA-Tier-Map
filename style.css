@@ -173,25 +173,412 @@ margin-top: 100px;
   font-size: 15px;
 }
 
-/* Mobile toggle buttons */
-.mobile-toggles {
-  display: none;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1100;
+/* Address search bar */
+.search-bar {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 6px;
 }
 
-.mobile-toggles button {
-  padding: 8px 12px;
-  font-size: 14px;
+.search-bar input {
+  padding: 8px 10px;
+  font-size: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #00274d;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #00274d;
+  box-shadow: 0 0 0 2px rgba(0, 39, 77, 0.15);
+}
+
+#searchStreet { width: 240px; }
+#searchCity { width: 150px; }
+#searchZip { width: 90px; }
+
+.search-bar button {
+  padding: 9px 20px;
+  font-size: 15px;
+  font-weight: 600;
   background-color: #00274d;
-  color: #fff;
+  color: #ffffff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.search-bar button:hover {
+  background-color: #013a6b;
+}
+
+.search-status {
+  text-align: center;
+  min-height: 20px;
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+
+/* County detail modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 39, 77, 0.55);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-card {
+  position: relative;
+  background: #ffffff;
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.3);
+  padding: 30px 28px 24px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #00274d;
+  animation: modalIn 0.2s ease-out;
+}
+
+.modal-body {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.modal-shape {
+  flex: 0 0 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.modal-shape svg {
+  width: 100%;
+  height: auto;
+  max-height: 190px;
+}
+
+.modal-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Special designations (address-search results) */
+.modal-tract {
+  font-size: 13px;
+  color: #6c757d;
+  margin: -2px 0 10px;
+}
+
+.modal-desig-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.desig-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.desig-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.desig-row.on .desig-icon { background: #e3f3e7; color: #2e7d43; }
+.desig-row.off .desig-icon { background: #f1f3f5; color: #adb5bd; }
+
+.desig-label {
+  flex: 1 1 auto;
+  color: #00274d;
+}
+
+.desig-label em {
+  color: #6c757d;
+  font-style: normal;
+  font-size: 12px;
+}
+
+.desig-row.off .desig-label { color: #868e96; }
+
+.desig-val {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.desig-row.on .desig-val { color: #2e7d43; }
+.desig-row.off .desig-val { color: #adb5bd; }
+
+.desig-loading,
+.desig-error {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.desig-error { color: #d9534f; }
+
+/* Industry (Business Enterprise) eligibility */
+.elig-summary {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 10px;
+  color: #00274d;
+}
+
+.elig-yes {
+  font-weight: 700;
+  color: #2e7d43;
+}
+
+.elig-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  background: #ffffff;
+  color: #00274d;
+  border: 1px solid #00274d;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.elig-toggle:hover { background: #eef2f6; }
+
+.elig-toggle[aria-expanded="true"] .elig-caret { transform: rotate(180deg); }
+
+.elig-caret {
+  display: inline-block;
+  font-size: 11px;
+  transition: transform 0.15s ease;
+}
+
+.elig-list {
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+}
+
+.elig-sector + .elig-sector { border-top: 1px solid #e9ecef; }
+
+.elig-sector-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border: none;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #00274d;
+  text-align: left;
+}
+
+.elig-sector-head:hover { background: #eef2f6; }
+
+.elig-sector-head .elig-caret { transition: transform 0.15s ease; }
+.elig-sector-head.open .elig-caret { transform: rotate(90deg); }
+
+.elig-sector-name { flex: 1 1 auto; }
+
+.elig-count {
+  flex: 0 0 auto;
+  background: #00274d;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+
+.elig-sector-body {
+  padding: 4px 12px 8px;
+  background: #ffffff;
+}
+
+.elig-item {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  border-top: 1px solid #f1f3f5;
+}
+
+.elig-item:first-child { border-top: none; }
+
+.elig-code {
+  flex: 0 0 62px;
+  font-weight: 700;
+  color: #00274d;
+  font-variant-numeric: tabular-nums;
+}
+
+.elig-desc { flex: 1 1 auto; color: #495057; }
+
+@media (max-width: 600px) {
+  .modal-body {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .modal-shape {
+    flex-basis: auto;
+    max-height: 160px;
+  }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 10px 10px 0 0;
+  background: #6c757d;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 30px;
+  line-height: 1;
+  color: #adb5bd;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.modal-close:hover {
+  color: #00274d;
+}
+
+.modal-year {
+  margin: 4px 0 2px;
+  font-size: 13px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+}
+
+.modal-card h2 {
+  margin: 2px 0 12px;
+  font-size: 27px;
+  font-weight: 700;
+  color: #00274d;
+}
+
+.modal-address {
+  font-size: 14px;
+  color: #495057;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.modal-tier-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 20px;
+  background: #6c757d;
+  color: #ffffff;
+}
+
+.modal-section {
+  border-top: 1px solid #e9ecef;
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+.modal-section h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #00274d;
+}
+
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin: 9px 0;
+  font-size: 15px;
+}
+
+.modal-row span {
+  color: #495057;
+}
+
+.modal-row strong {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.modal-note {
+  font-size: 13px;
+  color: #868e96;
+  font-style: italic;
+  margin: -4px 0 6px;
+}
+
+.modal-basis {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2e7d43;
+  margin: 4px 0 0;
 }
 
 /* Hide panels by default on mobile */
@@ -200,10 +587,6 @@ margin-top: 100px;
   .info-panel,
   #investmentInfoPanel {
     display: none;
-  }
-
-  .mobile-toggles {
-    display: flex;
   }
 
   .legend.show,

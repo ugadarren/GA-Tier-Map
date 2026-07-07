@@ -1,0 +1,290 @@
+{
+  "source": "GA DCA Job Tax Credit — Business Enterprise NAICS list",
+  "sectors": [
+    {
+      "sector": "Manufacturing",
+      "industries": [
+        {
+          "code": "31-33",
+          "desc": "Manufacturing - All Subsectors"
+        }
+      ]
+    },
+    {
+      "sector": "Warehousing & Distribution",
+      "industries": [
+        {
+          "code": "423",
+          "desc": "Merchant Wholesalers, Durable Goods"
+        },
+        {
+          "code": "424",
+          "desc": "Merchant Wholesalers, Nondurable Goods"
+        },
+        {
+          "code": "493",
+          "desc": "Warehousing and Storage"
+        },
+        {
+          "code": "481112",
+          "desc": "Scheduled Freight Air Transportation"
+        },
+        {
+          "code": "481212",
+          "desc": "Nonscheduled chartered freight air transportation"
+        },
+        {
+          "code": "482112",
+          "desc": "Line-haul railroads, short line railroads"
+        },
+        {
+          "code": "483111",
+          "desc": "Deep sea freight transportation"
+        },
+        {
+          "code": "483211",
+          "desc": "Inland water transportation of cargo on lakes, rivers, or intracoastal waterways"
+        },
+        {
+          "code": "4841",
+          "desc": "General freight trucking"
+        },
+        {
+          "code": "484220",
+          "desc": "Local, specialized trucking (except used goods)"
+        },
+        {
+          "code": "484230",
+          "desc": "Specialized Freight (except Used Goods) Trucking, Long-Distance"
+        },
+        {
+          "code": "485111",
+          "desc": "Mixed Mode Transit Systems"
+        },
+        {
+          "code": "486110",
+          "desc": "Pipeline transportation of crude oil"
+        },
+        {
+          "code": "486210",
+          "desc": "Pipeline transportation of natural gas"
+        },
+        {
+          "code": "486910",
+          "desc": "Pipeline transportation of refined petroleum products"
+        },
+        {
+          "code": "486990",
+          "desc": "All other pipeline transportation"
+        },
+        {
+          "code": "488320",
+          "desc": "Marine cargo and handling"
+        },
+        {
+          "code": "488510",
+          "desc": "Freight transportation arrangement"
+        },
+        {
+          "code": "541611",
+          "desc": "Only as it associates to establishments that provide consulting services to clients relating to the physical distribution of goods and services"
+        }
+      ]
+    },
+    {
+      "sector": "Processing",
+      "industries": [
+        {
+          "code": "21",
+          "desc": "Mining, Quarrying, and Oil and Gas Extraction - All subsectors"
+        },
+        {
+          "code": "518210",
+          "desc": "Data processing services"
+        },
+        {
+          "code": "524292",
+          "desc": "Pharmacy benefits management and other third-party administration of insurance and pension funds"
+        },
+        {
+          "code": "522320",
+          "desc": "Automated clearinghouses, check clearinghouse associations"
+        },
+        {
+          "code": "523210",
+          "desc": "Furnishing physical or electronic marketplaces for the purpose of facilitating the buying and selling of stocks, stock options, bonds or commodity contracts"
+        },
+        {
+          "code": "5415",
+          "desc": "Computer Systems Design and Related Services"
+        },
+        {
+          "code": "513210",
+          "desc": "Producing and distributing computer software"
+        },
+        {
+          "code": "518210",
+          "desc": "Providing data processing services"
+        },
+        {
+          "code": "541214",
+          "desc": "Providing payroll services"
+        },
+        {
+          "code": "522320",
+          "desc": "Financial transaction or credit card processing services"
+        },
+        {
+          "code": "54138",
+          "desc": "Testing laboratories and services"
+        },
+        {
+          "code": "6215",
+          "desc": "Medical and Diagnostic Laboratories"
+        }
+      ]
+    },
+    {
+      "sector": "Telecommunications",
+      "industries": [
+        {
+          "code": "514111",
+          "desc": "Operating, maintaining and/or providing access to facilities for the transmission of voice, data, text, sound and video"
+        },
+        {
+          "code": "517111",
+          "desc": "Wired Telecommunications Carriers"
+        },
+        {
+          "code": "517112",
+          "desc": "Wireless Telecommunications Carriers (except Satellite)"
+        },
+        {
+          "code": "517810",
+          "desc": "Satellite telecommunications service"
+        },
+        {
+          "code": "56142",
+          "desc": "Telephone call center services comprising telephone answering services and telemarketing bureaus and other contact centers (exception of telecommunication resellers and agents)"
+        }
+      ]
+    },
+    {
+      "sector": "Broadcasting",
+      "industries": [
+        {
+          "code": "516",
+          "desc": "Transmission or licensing of audio, video, text, or other programming content to the general public, subscribers, or to third parties via radio, television, cable, satellite, or the Internet or Internet Protocol and includes motion picture and sound recording, editing, production, postproduction, and distribution"
+        },
+        {
+          "code": "519",
+          "desc": "Internet publishing and broadcasting"
+        },
+        {
+          "code": "517",
+          "desc": "Telecommunications - with the exception of telecommunication resellers and agents"
+        },
+        {
+          "code": "512",
+          "desc": "Motion picture and sound recording"
+        }
+      ]
+    },
+    {
+      "sector": "Research & Development",
+      "industries": [
+        {
+          "code": "54171",
+          "desc": "Conducting research and experimental development in the physical, engineering and life sciences"
+        },
+        {
+          "code": "541720",
+          "desc": "Conducting research and analyses in cognitive development, sociology, psychology, language, behavior, economic, and other social science and humanities research"
+        },
+        {
+          "code": "927",
+          "desc": "Space research and technology"
+        }
+      ]
+    },
+    {
+      "sector": "Tourism",
+      "industries": [
+        {
+          "code": "7211",
+          "desc": "Providing lodging for the public (provided that establishments offering lodging for more than 30 consecutive days to the same customer shall not qualify for a tax credit under this provision)"
+        },
+        {
+          "code": "721211",
+          "desc": "Providing overnight or short term sites for recreational vehicles, trailers, campers or tents (provided that establishments primarily engaged in the operation of residential trailer parks or primarily engaged in providing accommodations for more than 30 consecutive days to the same customer shall not qualify for a tax credit under this provision)"
+        },
+        {
+          "code": "711310",
+          "desc": "Operation of convention centers"
+        },
+        {
+          "code": "711310",
+          "desc": "Operation of sports stadiums or arenas"
+        },
+        {
+          "code": "721214",
+          "desc": "Operation of recreational camps (provided that establishments primarily engaged in the operation of summer camps shall not qualify for a tax credit under this provision)"
+        },
+        {
+          "code": "713910",
+          "desc": "Golf courses open to the general public on a contract or fee basis, which are associated with a resort development (provided that establishments primarily engaged in the operation of golf courses associated with housing developments shall not qualify for a tax credit under this provision)"
+        },
+        {
+          "code": "711211",
+          "desc": "Operation of sports complexes open to the general public on a contract or fee basis (provided that for the purposes of this provision professional and semi-professional sport clubs include only those clubs which compensate athletes for their services as players and such term does not include amateur sport clubs, amateur sport leagues, or amateur sport associations)"
+        },
+        {
+          "code": "711212",
+          "desc": "Operation of racing facilities, including drag-strips, motorcycle race tracks, auto or stock car race tracks or speedways"
+        },
+        {
+          "code": "713110",
+          "desc": "Operation of amusement centers, amusement parks, theme parks, or amusement piers"
+        },
+        {
+          "code": "561520",
+          "desc": "Operation of tours within the State of Georgia"
+        },
+        {
+          "code": "487",
+          "desc": "Operation of airplanes, helicopters, buses, trolleys, vans, scenic railroads, aerial tramways, or boats for excursion or sightseeing purposes within the State of Georgia"
+        },
+        {
+          "code": "114111",
+          "desc": "Commercial catching or taking of finfish"
+        },
+        {
+          "code": "114112",
+          "desc": "Commercial catching or taking of shellfish"
+        },
+        {
+          "code": "114119",
+          "desc": "Commercial catching or taking of marine animals (except finfish and shellfish)"
+        },
+        {
+          "code": "114210",
+          "desc": "(1) commercial hunting and trapping; (2) operating commercial game preserves, such as game retreats; and (3) operating hunting preserves"
+        },
+        {
+          "code": "712",
+          "desc": "Operation of museums, planetariums, art galleries, botanical gardens, aquariums, or zoological gardens ( provided that establishments which derive 50% or more of their gross revenue from the sale of goods or merchandise shall not qualify for a tax credit under this provision)"
+        }
+      ]
+    },
+    {
+      "sector": "Services for the Elderly and Persons with Disabilities",
+      "industries": [
+        {
+          "code": "624120",
+          "desc": "Nonresidential social assistance services to improve the quality of life for the elderly, persons diagnosed with intellectual and developmental disabilities, or persons with disabilities.",
+          "countyTierOnly": true
+        }
+      ]
+    }
+  ]
+}

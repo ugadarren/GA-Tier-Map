@@ -3,27 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com 'unsafe-inline'; img-src 'self' data: https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://services2.arcgis.com; font-src 'self'; base-uri 'none'; form-action 'none'" />
   <title>Georgia JTC & ITC Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+        crossorigin="anonymous" />
  <link rel="stylesheet" href="style.css" />
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+          crossorigin="anonymous"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
   <header>
     <h1>Georgia JTC & ITC Map</h1>
   </header>
-<div class="mobile-toggles">
-  <button id="toggleLegend">Legend</button>
-  <button id="toggleInfo">Info</button>
-</div>
 <div style="text-align:center; margin:20px;">
   <label for="yearSelect" style="font-weight:600; font-size:16px; margin-right:8px;">Select Year:</label>
   <select id="yearSelect" style="font-size:16px; padding:6px 10px;">
-    <option value="2025" selected>2025</option>
+    <option value="2026" selected>2026</option>
+    <option value="2025">2025</option>
     <option value="2024">2024</option>
     <option value="2023">2023</option>
     <option value="2022">2022</option>
   </select>
 </div>
+<div class="search-bar">
+  <input id="searchStreet" type="text" placeholder="Street address" aria-label="Street address" />
+  <input id="searchCity" type="text" placeholder="City" aria-label="City" />
+  <input id="searchZip" type="text" placeholder="ZIP" inputmode="numeric" aria-label="ZIP code" />
+  <button id="searchBtn">Search</button>
+</div>
+<div id="searchStatus" class="search-status" role="status" aria-live="polite"></div>
   <div id="map"></div>
 <div id="countyInfoPanel" class="info-panel">
   <h2 id="countyName">County Name</h2>
@@ -34,174 +45,49 @@ Job Tax Credit</h2>
   <p><strong>Max Job Tax Credit:</strong> <span id="countyCredit">—</span></p>
   <p>Per Year for 5 Years<p>
   <p><strong>Minimum New Jobs Created:</strong> <span id="countyJobs">—</span></p></div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <div id="investmentInfoPanel" class="info-panel">
   <h2>Investment Tax Credit</h2>
   <p><strong>Available Credit:</strong> <span id="investmentCredit">—</span></p>
 </div>
-  <script>
-    const map = L.map('map').setView([32.5, -83.5], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
 
-    const tierColors = {
-      "Tier 1 Lower 40": "#004080",
-      "Tier 1": "#00274d",
-      "Tier 2": "#6c757d",
-      "Tier 3": "#f4c542",
-      "Tier 4": "#d9534f"
-    };
-
-let tierData = {};
-let currentYear = "2025";
-let geoLayer;
-
-function loadTierData() {
-  fetch('tiers.json')
-    .then(response => response.json())
-    .then(data => {
-      tierData = data;
-      renderMap(currentYear);
-    });
-}
-
-function renderMap(year) {
-  currentYear = year;
-  const tierMap = tierData[year];
-
-  // Fade out existing counties
-  if (geoLayer) {
-    geoLayer.eachLayer(layer => {
-      const path = layer._path;
-      if (path) {
-        path.classList.remove("county-visible");
-        path.classList.add("county-fade");
-      }
-    });
-  }
-
-  setTimeout(() => {
-    if (geoLayer) {
-      map.removeLayer(geoLayer);
-    }
-
-    fetch('CountyBoundaries.geojson')
-      .then(response => response.json())
-      .then(data => {
-        geoLayer = L.geoJSON(data, {
-          style: feature => {
-            const rawName = feature.properties.NAME || feature.properties.Name || feature.properties.COUNTY;
-            const county = rawName.replace(" County", "").trim().toLowerCase();
-            const label = tierData[year][county];
-
-            const classMap = {
-              "Tier 1 Lower 40": "tier1-lower40",
-              "Tier 1": "tier1",
-              "Tier 2": "tier2",
-              "Tier 3": "tier3",
-              "Tier 4": "tier4"
-            };
-
-            return {
-              className: `${classMap[label] || "tier-unknown"} county-fade`,
-              weight: 1.5,
-              color: "#333333",
-              opacity: 1,
-              fillOpacity: 0.9
-            };
-          },
-          onEachFeature: (feature, layer) => {
-            const rawName = feature.properties.NAME || feature.properties.Name || feature.properties.COUNTY;
-            const county = rawName.replace(" County", "").trim();
-            const label = tierMap[county.toLowerCase()] || "Tier Unknown";
-
-            const creditMap = {
-              "Tier 1 Lower 40": "$4,000 per job",
-              "Tier 1": "$3,500 per job",
-              "Tier 2": "$2,500 per job",
-              "Tier 3": "$1,250 per job",
-              "Tier 4": "$750 per job"
-            };
-	   
- const jobThresholdMap = {
-  "Tier 1 Lower 40": "2 jobs",
-  "Tier 1": "2 jobs",
-  "Tier 2": "10 jobs",
-  "Tier 3": "15 jobs",
-  "Tier 4": "25 jobs"
-};
-
-const investmentCreditMap = {
-  "Tier 1 Lower 40": "5% of investment cost",
-  "Tier 1": "5% of investment cost",
-  "Tier 2": "3% of investment cost",
-  "Tier 3": "1% of investment cost",
-  "Tier 4": "1% of investment cost"
-};
-
-            const creditInfo = creditMap[label] || "N/A";
-
-           layer.on('mouseover', function (e) {
-  this.setStyle({
-    weight: 2.5,
-    color: "#007bff",
-    fillOpacity: 0.9
-  });
-  this.bringToFront();
-
-  document.getElementById("countyName").textContent = `${county} County`;
-  document.getElementById("countyTier").textContent = label;
-  document.getElementById("countyCredit").textContent = creditInfo;
-  document.getElementById("countyJobs").textContent = jobThresholdMap[label] || "—";
-  document.getElementById("investmentCredit").textContent = investmentCreditMap[label] || "—";
-
-});
-
-layer.on('mouseout', function () {
-  geoLayer.resetStyle(this);
-});
-
-
-            layer.on('mouseout', function () {
-              geoLayer.resetStyle(this);
-              this.closePopup();
-            });
-
-            // Fade in new county
-            setTimeout(() => {
-              const path = layer._path;
-              if (path) {
-                path.classList.remove("county-fade");
-                path.classList.add("county-visible");
-              }
-            }, 50);
-          }
-        }).addTo(map);
-      });
-  }, 300);
-}
-
-       const legend = L.control({ position: "bottomright" });
-    legend.onAdd = function () {
-      const div = L.DomUtil.create("div", "legend");
-      div.innerHTML = `
-        <strong>Tier Legend</strong><br>
-        <span class="dot" style="background:#3b7f4d;"></span> Tier 1 Lower 40<br>
-        <span class="dot" style="background:#6fbf73;"></span> Tier 1<br>
-        <span class="dot" style="background:#4a6fa5;"></span> Tier 2<br>
-        <span class="dot" style="background:#5a8fc2;"></span> Tier 3<br>
-        <span class="dot" style="background:#7fb3e6;"></span> Tier 4
-      `;
-      return div;
-    };
-    legend.addTo(map);
-
-    document.getElementById('yearSelect').addEventListener('change', function () {
-      renderMap(this.value);
-    });
-
-    loadTierData();
-  </script>
+<div id="countyModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalCountyName">
+    <span class="modal-accent" id="modalAccent"></span>
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <div class="modal-shape" id="modalShape" aria-hidden="true"></div>
+      <div class="modal-details">
+        <p class="modal-year"><span id="modalYear"></span> Tier Designation</p>
+        <h2 id="modalCountyName">County</h2>
+        <p class="modal-address" id="modalAddress" style="display:none;"></p>
+        <span class="modal-tier-badge" id="modalTierBadge">Tier</span>
+        <div class="modal-section">
+          <h3>Job Tax Credit</h3>
+          <div class="modal-row"><span>Max Job Tax Credit</span><strong id="modalCredit">—</strong></div>
+          <div class="modal-note">Per year for 5 years</div>
+          <div class="modal-row"><span>Minimum New Jobs</span><strong id="modalJobs">—</strong></div>
+          <div class="modal-basis" id="modalCreditBasis" style="display:none;"></div>
+        </div>
+        <div class="modal-section">
+          <h3>Investment Tax Credit</h3>
+          <div class="modal-row"><span>Available Credit</span><strong id="modalInvestment">—</strong></div>
+        </div>
+        <div class="modal-section modal-designations" id="modalDesignations" style="display:none;">
+          <h3>Special Designations</h3>
+          <div class="modal-tract" id="modalTract"></div>
+          <div class="modal-desig-list" id="modalDesigList"></div>
+        </div>
+        <div class="modal-section modal-eligibility" id="modalEligibility" style="display:none;">
+          <h3>Industry Eligibility</h3>
+          <p class="elig-summary" id="eligSummary"></p>
+          <button class="elig-toggle" id="eligToggle" type="button" aria-expanded="false" style="display:none;">
+            Which industries qualify? <span class="elig-caret">▾</span>
+          </button>
+          <div class="elig-list" id="eligList" hidden></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
