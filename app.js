@@ -36,7 +36,12 @@
   }
 })();
 
-    const map = L.map('map', { zoomControl: false }).setView([32.5, -83.5], 7);
+    // Fit the initial view to Georgia's extent so the whole state fills the frame
+    // (height-constrained in a landscape window). zoomSnap: 0 allows a fractional
+    // zoom so it fits closely instead of snapping to a whole zoom level.
+    const GEORGIA_BOUNDS = [[30.34, -85.61], [35.01, -80.83]];
+    const map = L.map('map', { zoomControl: false, zoomSnap: 0 });
+    map.fitBounds(GEORGIA_BOUNDS, { padding: [10, 10] });
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
