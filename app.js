@@ -609,11 +609,27 @@
     // retries WITHOUT the city: a mailing city (e.g. "Norcross") often differs from the
     // OSM place name for an address, which otherwise causes a false "address not found".
     // The ZIP/street keeps the fallback precise, so the city is only dropped as a backup.
+    // Remove secondary unit designators (Suite/Ste/Apt/Unit/#/Floor/…). Nominatim often
+    // fails to match a street that includes them, e.g. "840 Franklin Ct Suite 100".
+    // The unit token must contain a digit or be a single letter, so real street suffixes
+    // like "St"/"Ave" are never stripped.
+    function stripUnit(street) {
+      if (!street) return street;
+      return street
+        .replace(/[,\s]+(?:suite|ste|apt|apartment|unit|bldg|building|fl|floor|rm|room|ofc|office|dept|department|space|spc|trlr|trailer|lot|hangar|hngr|slip|pier|ph)\.?\s*#?\s*(?:[A-Za-z]?\d[\dA-Za-z-]*|[A-Za-z])\s*$/i, '')
+        .replace(/[,\s]+#\s*(?:[A-Za-z]?\d[\dA-Za-z-]*|[A-Za-z])\s*$/i, '')
+        .replace(/\s+#\s*(?:[A-Za-z]?\d[\dA-Za-z-]*|[A-Za-z])/gi, '')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/[,\s]+$/, '')
+        .trim();
+    }
+
     async function geocodeGeorgiaAddress(street, city, zip) {
+      const s = stripUnit(street);
       const queries = [];
-      queries.push([street, city, "Georgia", zip].filter(Boolean).join(", ") + ", USA");
-      if (city && (street || zip)) {
-        queries.push([street, "Georgia", zip].filter(Boolean).join(", ") + ", USA");
+      queries.push([s, city, "Georgia", zip].filter(Boolean).join(", ") + ", USA");
+      if (city && (s || zip)) {
+        queries.push([s, "Georgia", zip].filter(Boolean).join(", ") + ", USA");
       }
       for (const q of queries) {
         const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=" +
